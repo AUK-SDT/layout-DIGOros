@@ -1,11 +1,12 @@
-class Items {
-  const Items({
+class Item {
+  Item({
     required this.description,
     required this.imagePath,
     required this.name,
     required this.price,
     this.isLegendary = false,
     this.durability,
+    this.isFavorite = false,
   });
 
   final String name;
@@ -14,6 +15,19 @@ class Items {
   final String imagePath;
   final bool isLegendary;
   final Durability? durability;
+  bool isFavorite;
+
+  bool get isEmpty => imagePath.isEmpty && description.isEmpty;
+}
+
+class Quest {
+  Quest({
+    required this.title,
+    this.isCompleted = false,
+  });
+
+  final String title;
+  bool isCompleted;
 }
 
 enum Durability {
@@ -23,11 +37,11 @@ enum Durability {
 
   String get label {
     switch (this) {
-      case Durability.max:
+      case .max:
         return 'Maximum durability';
-      case Durability.medium:
+      case .medium:
         return 'Medium durability';
-      case Durability.low:
+      case .low:
         return 'Low durability';
     }
   }
