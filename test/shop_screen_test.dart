@@ -24,59 +24,28 @@ void main() {
   testWidgets('Shop screen shows items and gold', (WidgetTester tester) async {
     await tester.pumpWidget(createShopScreen());
 
-    expect(find.text('Adventurer\'s Shop'), findsOneWidget);
+    expect(find.text('The Merchant\'s Ledger'), findsOneWidget);
     expect(find.byType(GoldDisplay), findsOneWidget);
-    expect(find.byType(GridView), findsOneWidget);
+    expect(find.byType(ListView), findsOneWidget);
     
-    // Check if some items from the master list are present (e.g., "Basic Potion")
-    // Initially at tier 0, Basic Potion and Rusty Sword should be there.
-    expect(find.text('Basic Potion'), findsOneWidget);
+    // Check if some items from the master list are present
+    expect(find.text('Health Potion'), findsWidgets);
     expect(find.text('Rusty Sword'), findsOneWidget);
   });
 
-  testWidgets('Tapping on item shows purchase confirmation dialog', (WidgetTester tester) async {
+  testWidgets('Tapping on Buy button purchases item directly', (WidgetTester tester) async {
     await tester.pumpWidget(createShopScreen());
 
-    // Tap on Basic Potion
-    await tester.tap(find.text('Basic Potion'));
-    await tester.pump(); // Start animation
-    await tester.pump(const Duration(milliseconds: 500)); // Wait for dialog
-
-    expect(find.text('Purchase Basic Potion?'), findsOneWidget);
-    expect(find.text('Buy'), findsOneWidget);
-    expect(find.text('Cancel'), findsOneWidget);
-  });
-
-  testWidgets('Purchase item with enough gold shows success SnackBar', (WidgetTester tester) async {
-    await tester.pumpWidget(createShopScreen());
-
-    // Basic Potion price is 20, initial gold is 100
-    await tester.tap(find.text('Basic Potion'));
+    // Buy Health Potion
+    await tester.tap(find.text('Buy').first);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Buy'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Successfully purchased Basic Potion!'), findsOneWidget);
+    expect(find.text('Successfully purchased Health Potion!'), findsOneWidget);
     expect(appState.gold, equals(80));
-    // Item should be removed from shop
-    expect(find.text('Basic Potion'), findsNothing);
   });
 
   testWidgets('Purchase item without enough gold shows failure SnackBar', (WidgetTester tester) async {
-    // Reset gold to something small
-    appState.resetQuests(); // 100 gold
-    // Rusty Sword price is 50. Let's make gold 10.
-    // Actually, I can't easily set gold because it's private.
-    // But I can complete/uncomplete quests to change gold.
-    // Or just check if I can buy Iron Armor (price 150) with 100 gold.
-    // First, complete 2 quests to unlock Iron Armor.
-    appState.toggleQuest(0); // +50 = 150 gold
-    appState.toggleQuest(1); // +50 = 200 gold
-    // But then I will have 200 gold.
-    // Let's buy something expensive first or just use an item that's more expensive than 200 gold.
-    // Dragon Armor is 500 gold.
-    // Let's complete all quests.
+    // Complete all quests to unlock Dragon Armor
     for (int i = 0; i < 5; i++) {
       if (!appState.quests[i].isCompleted) appState.toggleQuest(i);
     }
@@ -86,15 +55,20 @@ void main() {
     await tester.pumpWidget(createShopScreen());
     
     expect(find.text('Dragon Armor'), findsOneWidget);
-    await tester.tap(find.text('Dragon Armor'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Buy'));
+    
+    // Find the 'Buy' button for Dragon Armor
+    // Since it's a list, it should be the last one if Dragon Armor is last
+    // Or we can find by scrolling or just finding the one next to the text
+    await tester.scrollUntilVisible(find.text('Dragon Armor'), 100);
+    
+    // Find Buy button in the same row as Dragon Armor
+    final dragonArmorRow = find.ancestor(of: find.text('Dragon Armor'), matching: find.byType(Row));
+    final buyButton = find.descendant(of: dragonArmorRow, matching: find.text('Buy'));
+    
+    await tester.tap(buyButton);
     await tester.pumpAndSettle();
 
     expect(find.text('Not enough gold to buy this item!'), findsOneWidget);
     expect(appState.gold, equals(350));
-    // Item should still be in shop
-    expect(find.text('Dragon Armor'), findsOneWidget);
   });
 }

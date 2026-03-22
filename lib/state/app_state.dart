@@ -37,6 +37,15 @@ class AppState extends ChangeNotifier {
   };
 
   AppState() {
+    // Initialize with 3 Health Potions
+    for (int i = 0; i < 3; i++) {
+      _shopItems.add(Item(
+        name: 'Health Potion',
+        description: 'Restores small amount of health.',
+        price: 20,
+        imagePath: AppAssets.potion,
+      ));
+    }
     updateShopStock();
   }
 
@@ -57,17 +66,17 @@ class AppState extends ChangeNotifier {
       _gold += 50;
       _rechargePotion();
     } else {
-      _gold -= 50;
+      _gold = (_gold - 50).clamp(0, double.infinity).toInt();
     }
     
     updateShopStock();
     notifyListeners();
   }
 
-  void buyItem(int index) {
-    if (index < 0 || index >= _shopItems.length) return;
+  void buyItem(Item item) {
+    final index = _shopItems.indexOf(item);
+    if (index == -1) return;
     
-    final item = _shopItems[index];
     if (_gold >= item.price) {
       final emptyIndex = _inventory.indexWhere((invItem) => invItem.isEmpty);
       if (emptyIndex != -1) {
@@ -82,7 +91,7 @@ class AppState extends ChangeNotifier {
   void updateShopStock() {
     final completedCount = _quests.where((q) => q.isCompleted).length;
     
-    // Keep existing Health Potions to ensure they are treated separately from unique items
+    // Keep existing Health Potions to preserve their current count
     final List<Item> currentPotions = _shopItems.where((item) => item.name == 'Health Potion').toList();
     _shopItems.clear();
     _shopItems.addAll(currentPotions);
@@ -98,18 +107,6 @@ class AppState extends ChangeNotifier {
         }
       }
     });
-
-    // Ensure initial stock or recharge up to 3 potions
-    int potionCount = _shopItems.where((item) => item.name == 'Health Potion').length;
-    while (potionCount < 3) {
-      _shopItems.add(Item(
-        name: 'Health Potion',
-        description: 'Restores small amount of health.',
-        price: 20,
-        imagePath: AppAssets.potion,
-      ));
-      potionCount++;
-    }
   }
 
   void _rechargePotion() {
