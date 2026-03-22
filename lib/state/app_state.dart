@@ -42,10 +42,33 @@ class AppState extends ChangeNotifier {
     Quest(title: 'Level up to 5'),
   ];
 
+  final List<Item> _shopItems = [];
+
+  // Master shop items organized by quest count required (0, 2, 5)
+  final Map<int, List<Item>> _masterShopItems = {
+    0: [
+      Item(name: 'Basic Potion', description: 'Restores small amount of health.', price: 20, imagePath: AppAssets.potion),
+      Item(name: 'Rusty Sword', description: 'An old, rusty blade.', price: 50, imagePath: AppAssets.sword),
+    ],
+    2: [
+      Item(name: 'Iron Armor', description: 'Stronger iron protection.', price: 150, imagePath: AppAssets.armor),
+      Item(name: 'Steel Sword', description: 'A sharp steel blade.', price: 100, imagePath: AppAssets.sword),
+    ],
+    5: [
+      Item(name: 'Dragon Armor', description: 'Armor made from dragon scales.', price: 500, imagePath: AppAssets.armor, isLegendary: true),
+      Item(name: 'Excalibur', description: 'A legendary sword.', price: 1000, imagePath: AppAssets.sword, isLegendary: true),
+    ],
+  };
+
+  AppState() {
+    updateShopStock();
+  }
+
   // Getters
   int get gold => _gold;
   List<Item> get inventory => List.unmodifiable(_inventory);
   List<Quest> get quests => List.unmodifiable(_quests);
+  List<Item> get shopItems => List.unmodifiable(_shopItems);
 
   // Actions
   void toggleQuest(int index) {
@@ -60,7 +83,36 @@ class AppState extends ChangeNotifier {
       _gold -= 50;
     }
     
+    updateShopStock();
     notifyListeners();
+  }
+
+  void buyItem(int index) {
+    if (index < 0 || index >= _shopItems.length) return;
+    
+    final item = _shopItems[index];
+    if (_gold >= item.price) {
+      _gold -= item.price.toInt();
+      _inventory.add(item);
+      _shopItems.removeAt(index);
+      notifyListeners();
+    }
+  }
+
+  void updateShopStock() {
+    final completedCount = _quests.where((q) => q.isCompleted).length;
+    _shopItems.clear();
+    
+    _masterShopItems.forEach((tier, items) {
+      if (completedCount >= tier) {
+        for (var item in items) {
+          final isAlreadyOwned = _inventory.any((invItem) => invItem.name == item.name);
+          if (!isAlreadyOwned) {
+            _shopItems.add(item);
+          }
+        }
+      }
+    });
   }
 
   void deleteItem(int index) {
@@ -80,6 +132,7 @@ class AppState extends ChangeNotifier {
       quest.isCompleted = false;
     }
     _gold = 100;
+    updateShopStock();
     notifyListeners();
   }
 }
