@@ -6,33 +6,10 @@ import '../core/constants/assets.dart';
 class AppState extends ChangeNotifier {
   int _gold = 100;
   
-  final List<Item> _inventory = [
-    Item(
-      name: 'Flame Sword',
-      description: 'A balanced steel blade. It`s blade set ablaze with holy flames.',
-      price: 120,
-      imagePath: AppAssets.sword,
-      durability: Durability.max,
-      isLegendary: true,
-    ),
-    Item(
-      name: 'Paladin Plate Armor',
-      description: 'Heavy armor that greatly increases defense with divine protection.',
-      price: 350,
-      imagePath: AppAssets.armor,
-      durability: Durability.medium,
-      isLegendary: true,
-    ),
-    Item(
-      name: 'Health Potion',
-      description: 'Restores 50 HP instantly.',
-      price: 60,
-      imagePath: AppAssets.potion,
-    ),
-    Item(name: 'Empty Slot', description: '', price: 0, imagePath: ''),
-    Item(name: 'Empty Slot', description: '', price: 0, imagePath: ''),
-    Item(name: 'Empty Slot', description: '', price: 0, imagePath: ''),
-  ];
+  final List<Item> _inventory = List.generate(
+    6,
+    (_) => Item(name: 'Empty Slot', description: '', price: 0, imagePath: ''),
+  );
 
   final List<Quest> _quests = [
     Quest(title: 'Slay 10 Goblins'),
@@ -92,10 +69,13 @@ class AppState extends ChangeNotifier {
     
     final item = _shopItems[index];
     if (_gold >= item.price) {
-      _gold -= item.price.toInt();
-      _inventory.add(item);
-      _shopItems.removeAt(index);
-      notifyListeners();
+      final emptyIndex = _inventory.indexWhere((invItem) => invItem.isEmpty);
+      if (emptyIndex != -1) {
+        _gold -= item.price.toInt();
+        _inventory[emptyIndex] = item;
+        _shopItems.removeAt(index);
+        notifyListeners();
+      }
     }
   }
 
@@ -117,7 +97,8 @@ class AppState extends ChangeNotifier {
 
   void deleteItem(int index) {
     if (index < 0 || index >= _inventory.length) return;
-    _inventory.removeAt(index);
+    _inventory[index] = Item(name: 'Empty Slot', description: '', price: 0, imagePath: '');
+    updateShopStock();
     notifyListeners();
   }
 
