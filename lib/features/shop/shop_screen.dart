@@ -62,7 +62,18 @@ class _ShopGridItem extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
-      onTap: () => _showPurchaseConfirmation(context, appState, item, index),
+      onTap: () {
+        if (!appState.inventory.any((i) => i.isEmpty)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Inventory Full! Please sell or delete something first.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+        _showPurchaseConfirmation(context, appState, item, index);
+      },
       child: RPGCard(
         padding: EdgeInsets.zero,
         borderColor: item.isLegendary ? Colors.orange : null,
