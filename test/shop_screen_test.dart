@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:homework_4_mykhailo_kustov/state/app_state.dart';
 import 'package:homework_4_mykhailo_kustov/features/shop/shop_screen.dart';
 import 'package:homework_4_mykhailo_kustov/core/widgets/gold_display.dart';
-import 'package:homework_4_mykhailo_kustov/core/widgets/rpg_card.dart';
 
 void main() {
   late AppState appState;
