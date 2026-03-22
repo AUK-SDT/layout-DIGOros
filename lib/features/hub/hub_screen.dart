@@ -3,6 +3,7 @@ import '../../core/widgets/app_button.dart';
 import '../../core/widgets/gold_display.dart';
 import '../inventory/inventory_screen.dart';
 import '../quests/quests_screen.dart';
+import '../shop/shop_screen.dart';
 
 class HubScreen extends StatelessWidget {
   const HubScreen({super.key});
@@ -57,6 +58,18 @@ class HubScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const QuestsScreen()),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              AppButton(
+                label: 'Visit Merchant',
+                icon: Icons.store,
+                isFullWidth: true,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ShopScreen()),
                   );
                 },
               ),
