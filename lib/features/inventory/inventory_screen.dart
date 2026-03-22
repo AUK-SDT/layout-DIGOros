@@ -60,6 +60,18 @@ class _InventoryGridItemState extends State<_InventoryGridItem> {
     final appState = context.watch<AppState>();
     final item = appState.inventory[widget.index];
 
+    if (item.isEmpty) {
+      return RPGCard(
+        padding: EdgeInsets.zero,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => _showItemDetails(context, item),
@@ -73,46 +85,37 @@ class _InventoryGridItemState extends State<_InventoryGridItem> {
           borderRadius: BorderRadius.circular(12),
           child: Stack(
             children: [
-              if (item.imagePath.isEmpty)
-                const Center(
-                  child: Text(
-                    'Empty Slot',
-                    style: TextStyle(color: Colors.white54),
+              Image.asset(
+                item.imagePath,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  icon: Icon(
+                    item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: item.isFavorite ? Colors.red : Colors.white70,
                   ),
-                )
-              else ...[
-                Image.asset(
-                  item.imagePath,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
+                  onPressed: () => appState.toggleFavorite(widget.index),
+                  iconSize: 20,
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
                 ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: IconButton(
-                    icon: Icon(
-                      item.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: item.isFavorite ? Colors.red : Colors.white70,
-                    ),
-                    onPressed: () => appState.toggleFavorite(widget.index),
-                    iconSize: 20,
-                    constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                  ),
+              ),
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.white70),
+                  onPressed: () => appState.deleteItem(widget.index),
+                  iconSize: 20,
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
                 ),
-                Positioned(
-                  bottom: 8,
-                  right: 8,
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.white70),
-                    onPressed: () => appState.deleteItem(widget.index),
-                    iconSize: 20,
-                    constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
+              ),
             ],
           ),
         ),
