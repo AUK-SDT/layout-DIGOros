@@ -21,10 +21,10 @@ class RPGCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: borderColor != null 
           ? Border.all(color: borderColor!, width: 2)
-          : Border.all(color: Colors.white.withOpacity(0.05), width: 1),
+          : Border.all(color: Colors.white.withValues(alpha: 0.05), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

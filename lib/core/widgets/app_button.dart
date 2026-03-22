@@ -24,7 +24,7 @@ class AppButton extends StatelessWidget {
       onPressed: onPressed,
       style: theme.elevatedButtonTheme.style?.copyWith(
         backgroundColor: backgroundColor != null 
-          ? MaterialStateProperty.all(backgroundColor)
+          ? WidgetStateProperty.all(backgroundColor)
           : null,
       ),
       child: Row(

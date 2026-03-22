@@ -1,0 +1,33 @@
+# TODO: Multi-Screen RPG Refactor
+
+- [ ] **Task 0: Preparation & Dependencies**
+    - [ ] Step 1: Add `provider` dependency
+    - [ ] Step 2: Create directory structure
+    - [ ] Step 3: Commit changes
+- [ ] **Task 1: Core Theme & Constants**
+    - [ ] Step 1: Define Asset Constants
+    - [ ] Step 2: Implement AppTheme
+    - [ ] Step 3: Commit changes
+- [ ] **Task 2: State Management (AppState)**
+    - [ ] Step 1: Migrate Models
+    - [ ] Step 2: Implement AppState
+    - [ ] Step 3: Commit changes
+- [ ] **Task 3: Shared UI Components**
+    - [ ] Step 1: Implement GoldDisplay
+    - [ ] Step 2: Implement RPGCard
+    - [ ] Step 3: Implement AppButton
+    - [ ] Step 4: Commit changes
+- [ ] **Task 4: Feature: Hub Screen**
+    - [ ] Step 1: Implement HubScreen
+    - [ ] Step 2: Commit changes
+- [ ] **Task 5: Feature: Inventory Screen**
+    - [ ] Step 1: Implement InventoryScreen
+    - [ ] Step 2: Commit changes
+- [ ] **Task 6: Feature: Quests Screen**
+    - [ ] Step 1: Implement QuestsScreen
+    - [ ] Step 2: Commit changes
+- [ ] **Task 7: Final Assembly**
+    - [ ] Step 1: Refactor main.dart
+    - [ ] Step 2: Clean up
+    - [ ] Step 3: Verify
+    - [ ] Step 4: Commit changes
