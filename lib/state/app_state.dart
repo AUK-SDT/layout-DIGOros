@@ -24,7 +24,6 @@ class AppState extends ChangeNotifier {
   // Master shop items organized by quest count required (0, 2, 5)
   final Map<int, List<Item>> _masterShopItems = {
     0: [
-      Item(name: 'Basic Potion', description: 'Restores small amount of health.', price: 20, imagePath: AppAssets.potion),
       Item(name: 'Rusty Sword', description: 'An old, rusty blade.', price: 50, imagePath: AppAssets.sword),
     ],
     2: [
@@ -56,6 +55,7 @@ class AppState extends ChangeNotifier {
     
     if (quest.isCompleted) {
       _gold += 50;
+      _rechargePotion();
     } else {
       _gold -= 50;
     }
@@ -81,18 +81,47 @@ class AppState extends ChangeNotifier {
 
   void updateShopStock() {
     final completedCount = _quests.where((q) => q.isCompleted).length;
+    
+    // Keep existing Health Potions to ensure they are treated separately from unique items
+    final List<Item> currentPotions = _shopItems.where((item) => item.name == 'Health Potion').toList();
     _shopItems.clear();
+    _shopItems.addAll(currentPotions);
     
     _masterShopItems.forEach((tier, items) {
       if (completedCount >= tier) {
         for (var item in items) {
           final isAlreadyOwned = _inventory.any((invItem) => invItem.name == item.name);
-          if (!isAlreadyOwned) {
+          final isAlreadyInShop = _shopItems.any((shopItem) => shopItem.name == item.name);
+          if (!isAlreadyOwned && !isAlreadyInShop) {
             _shopItems.add(item);
           }
         }
       }
     });
+
+    // Ensure initial stock or recharge up to 3 potions
+    int potionCount = _shopItems.where((item) => item.name == 'Health Potion').length;
+    while (potionCount < 3) {
+      _shopItems.add(Item(
+        name: 'Health Potion',
+        description: 'Restores small amount of health.',
+        price: 20,
+        imagePath: AppAssets.potion,
+      ));
+      potionCount++;
+    }
+  }
+
+  void _rechargePotion() {
+    final potionCount = _shopItems.where((item) => item.name == 'Health Potion').length;
+    if (potionCount < 3) {
+      _shopItems.add(Item(
+        name: 'Health Potion',
+        description: 'Restores small amount of health.',
+        price: 20,
+        imagePath: AppAssets.potion,
+      ));
+    }
   }
 
   void deleteItem(int index) {
